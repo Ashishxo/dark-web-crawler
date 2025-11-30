@@ -1,5 +1,8 @@
 // src/Pages/Addresses.jsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+
 
 function formatDateISO(iso) {
   if (!iso) return "—";
@@ -16,6 +19,7 @@ export default function Addresses() {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -28,7 +32,6 @@ export default function Addresses() {
         const data = await res.json();
         console.log("raw /addresses response:", data);
 
-        // Ensure stable ordering (API returned newest first in your example)
         const normalized = (data || []).map((it) => ({
           id: it.id,
           address: it.address,
@@ -38,6 +41,8 @@ export default function Addresses() {
           saved_at: it.saved_at,
           depth: it.depth,
           session_id: it.session_id,
+          is_illicit: it.is_illicit,
+          nlp_label: it.nlp_label
         }));
 
         setAddresses(normalized);
@@ -52,9 +57,14 @@ export default function Addresses() {
     fetchAddresses();
   }, []);
 
-  if (loading) return <div className="p-10 text-lg text-gray-600">Loading extracted addresses...</div>;
-  if (error) return <div className="p-10 text-lg text-red-600">Error: {error}</div>;
-  if (!addresses.length) return <div className="p-10 text-lg text-gray-600">No addresses found yet.</div>;
+  if (loading)
+    return <div className="p-10 text-lg text-gray-600">Loading extracted addresses...</div>;
+
+  if (error)
+    return <div className="p-10 text-lg text-red-600">Error: {error}</div>;
+
+  if (!addresses.length)
+    return <div className="p-10 text-lg text-gray-600">No addresses found yet.</div>;
 
   return (
     <div className="p-10 flex flex-col items-center">
@@ -67,17 +77,21 @@ export default function Addresses() {
               <th className="py-3 px-4 text-left w-12">#</th>
               <th className="py-3 px-4 text-left">Address</th>
               <th className="py-3 px-4 text-left">Context (snippet)</th>
-              <th className="py-3 px-4 text-left">Source</th>
+              <th className="py-3 px-4 text-left w-30">Source</th>
+              <th className="py-3 px-4 text-left">NLP Label</th>
+              <th className="py-3 px-4 text-left">Type</th>
               <th className="py-3 px-4 text-left">Timestamp</th>
             </tr>
           </thead>
 
           <tbody>
             {addresses.map((it, idx) => (
-              <tr key={it.id ?? idx} className="border-b hover:bg-gray-50 align-top">
+              <tr key={it.id ?? idx} onClick={() => navigate(`/graph/${it.address}`)} className="border-b hover:bg-gray-50 align-top">
                 <td className="py-3 px-4 align-top">{idx + 1}</td>
 
-                <td className="py-3 px-4 font-mono text-sm break-words max-w-[28rem]">{it.address}</td>
+                <td className="py-3 px-4 font-mono text-sm break-words max-w-[28rem]">
+                  {it.address}
+                </td>
 
                 <td className="py-3 px-4 text-sm">
                   <div title={it.context_snippet}>{truncate(it.context_snippet, 220)}</div>
@@ -85,17 +99,40 @@ export default function Addresses() {
 
                 <td className="py-3 px-4">
                   {it.url ? (
-                    <a href={it.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline break-words">
+                    <a
+                      href={it.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline break-words"
+                    >
                       {it.url}
                     </a>
                   ) : (
                     it.title ?? "—"
                   )}
-                  {/* small meta row */}
                   <div className="text-xs text-gray-500 mt-1">
                     {it.title ? <span>{it.title} • </span> : null}
                     {typeof it.depth !== "undefined" ? <span>depth: {it.depth}</span> : null}
                   </div>
+                </td>
+
+                <td className="py-3 px-4">
+                  <span className="px-3 py-1  text-black text-sm rounded-md">
+                    {it.nlp_label || "—"}
+                  </span>
+                </td>
+
+                {/* NEW COLUMN: LICIT vs ILLICIT */}
+                <td className="py-3 px-4">
+                  {it.is_illicit === 1 ? (
+                    <span className="px-3 py-1 bg-red-500 text-white text-xs rounded-full">
+                      Illicit
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 bg-green-500 text-white text-xs rounded-full">
+                      Licit
+                    </span>
+                  )}
                 </td>
 
                 <td className="py-3 px-4">{formatDateISO(it.saved_at)}</td>

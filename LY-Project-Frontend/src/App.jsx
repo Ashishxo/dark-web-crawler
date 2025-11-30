@@ -3,6 +3,7 @@ import { useState } from "react";
 import DarkWebSpider from "./Pages/DarkWebSpider";
 import { Link, Outlet } from "react-router-dom";
 import Addresses from "./Pages/Addresses";
+import MaliciousWallet from "./Pages/MaliciousWallet";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
         <Link to="/" className="text-lg text-[#4A5AB5] font-medium mb-2 hover:bg-[#c1ccfd] px-4 py-1 rounded-3xl cursor-pointer">Dark Web Spider</Link>
         <Link to="/addresses" className="text-lg text-[#4A5AB5] font-medium mb-2 hover:bg-[#c1ccfd] px-4 py-1 rounded-3xl cursor-pointer">Extracted Addresses</Link>
         <Link to="/graph" className="text-lg text-[#4A5AB5] font-medium mb-2 hover:bg-[#c1ccfd] px-4 py-1 rounded-3xl cursor-pointer">Graph Visualizer</Link>
-        <div className="text-lg text-[#4A5AB5] font-medium mb-2 hover:bg-[#c1ccfd] px-4 py-1 rounded-3xl cursor-pointer">Malicious Wallets</div>
+        <Link to="/malicious-wallets" className="text-lg text-[#4A5AB5] font-medium mb-2 hover:bg-[#c1ccfd] px-4 py-1 rounded-3xl cursor-pointer">Malicious Wallets</Link>
       </div>
 
       <Outlet/>
