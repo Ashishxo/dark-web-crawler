@@ -1,25 +1,3 @@
-"""
-validate_pipeline_v2.py
-
-End-to-end validation of the NEW feature extractor (blockchain.info API)
-+ Random Forest inference pipeline.
-
-Picks known illicit (class=1) and licit (class=2) addresses from the
-Elliptic++ CSV, fetches transactions from blockchain.info, computes
-features using feature_extractor.py, runs the saved RF model,
-and checks how many are correctly classified.
-
-Usage:
-    python validate_pipeline_v2.py
-
-Requirements (same directory):
-    - wallets_features_classes_combined.csv
-    - wallet_scalers.pkl
-    - feature_order.pkl
-    - random_forest_model.pkl
-    - feature_extractor.py (the new blockchain.info version)
-"""
-
 import time
 import sys
 import joblib
